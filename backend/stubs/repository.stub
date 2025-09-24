@@ -1,0 +1,33 @@
+<?php
+namespace {{ namespace }};
+
+use Illuminate\Support\Facades\DB;
+
+class {{ class }}
+{
+    public function show()
+    {
+
+    }
+
+    public function getById($id)
+    {
+        
+    }
+    
+    public function create($data)
+    {
+        
+    }
+
+    public function update($id)
+    {
+
+    }
+
+    public function delete($id)
+    {
+
+    }
+
+}

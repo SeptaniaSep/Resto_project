@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+
+/* Background */
+.bg-1 {
+  background-color: #616161;
+}
+.bg-2 {
+  background-color: #b9b9b9;
+}
+.bg-3 {
+  background-color: #f9fafb;
+}
+.bgbutton-1 {
+  background-color: #1e2939;
+}
+.bgbutton-2 {
+  background-color: #e5e7eb;
+}
+
+.bgbutton-3 {
+  background-color: #e61515;
+}
+
+/* Text */
+.text-1 {
+  color: #1e2939;
+}
+.text-2 {
+  color: #f8f8f8;
+}
+
+/* Border */
+.borderc-1 {
+  border-color: #99a1af;
+}
+
+/* Button Styles
+.btn-style-1 {
+  @apply flex items-center justify-center rounded text-white bgbutton-1 hover:opacity-90 transition;
+}
+
+.btn-style-2 {
+  @apply flex items-center justify-center rounded text-1 bgbutton-2 hover:bg-gray-300 transition;
+} */

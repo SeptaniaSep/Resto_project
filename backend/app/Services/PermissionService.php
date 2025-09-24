@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Services;
+
+use App\Helpers\ApiResponse;
+use App\Repositories\PermissionRepository;
+
+class PermissionService
+{
+    protected $repo;
+
+    public function __construct(PermissionRepository $repo)
+    {
+        $this->repo = $repo;
+    }
+
+    public function getPermission()
+    {
+       return ApiResponse::success($this->repo->show(), 'Successfully', 201);
+    }
+    public function createPermission($data)
+    {
+       $response = $this->repo->create($data);
+       return ApiResponse::success($response, 'Create Successfully', 201);
+    }
+    public function updatePermission($id, $data)
+    {
+       $response = $this->repo->update($id, $data);
+       return ApiResponse::success($response, 'Update Successfully', 201);
+    }
+    public function deletePermission($id)
+    {
+       $response = $this->repo->delete($id);
+       return ApiResponse::success($response, 'Delete Successfully', 201);
+    }
+}
