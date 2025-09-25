@@ -1,4 +1,4 @@
-import type { Menu } from "../../api/Menu";
+import type { Menu } from "../../hooks/Menu";
 
 type Props = {
   item: Menu;

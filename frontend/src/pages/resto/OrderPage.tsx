@@ -99,7 +99,7 @@ export default function OrderPage(
         </button>
 
         <h2 className="text-lg font-semibold">
-          Table {tableName} (Status: {tableStatus})
+          {/* Table {tableName} (Status: {tableStatus}) */}
         </h2>
       </div>
 

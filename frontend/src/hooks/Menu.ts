@@ -1,4 +1,4 @@
-import { apiProduct } from "./api";
+import { apiProduct } from "../api/api";
 
 
 export type Menu = {

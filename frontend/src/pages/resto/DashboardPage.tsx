@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import QuickStatus from "../../components/dashboard/QuickStatus";
 import TableCard from "../../components/dashboard/TableCard";
 import TableStatus from "../../components/dashboard/TableStatus";
-import { getTables, type Table } from "../../api/Table";
+import { getTables, type Table } from "../../hooks/Table";
 import type { TableStatus as Status } from "../../data/Tables";
 
 export default function DashboardPage() {

@@ -23,6 +23,7 @@ export default function InvoiceModal({
   onCloseTableOrderModal,
   onProcessOrder,
 }: InvoiceModalProps) {
+  const totalMenus = orderItems.reduce((acc, item) => acc + item.qty, 0);
   const handleProcess = () => {
     onProcessOrder(tableId);
     onClose();
@@ -62,7 +63,7 @@ export default function InvoiceModal({
         {/* Total menu */}
         <div className="flex justify-between font-semibold text-lg border-t mt-4 pt-2">
           <p>Total Menu:</p>
-          <p>{total} pcs</p>
+          <p>{totalMenus} pcs</p>
         </div>
 
         {/* Action */}

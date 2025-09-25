@@ -1,5 +1,5 @@
 import type { OrderItem } from "../components/modal/TableOrderModal";
-import { apiProduct } from "./api";
+import { apiProduct } from "../api/api";
 
 export const postOrder = async ( data: {
     table_number: number,

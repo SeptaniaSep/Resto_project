@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { TableStatus } from "../../data/Tables";
 import type { OrderItem } from "../modal/TableOrderModal";
 import InvoiceModal from "../modal/InvoiceModalItems";
-import { postOrder } from "../../api/Order";
+import { postOrder } from "../../hooks/Order";
 import { GiCampCookingPot, GiReceiveMoney } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import InvoiceModalPayments from "../modal/InvoiceModalPayments";

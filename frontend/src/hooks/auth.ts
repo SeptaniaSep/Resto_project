@@ -1,4 +1,4 @@
-import { apiAuth } from "./api";
+import { apiAuth } from "../api/api";
 
 
 export const RegisterUser = async ( data: {

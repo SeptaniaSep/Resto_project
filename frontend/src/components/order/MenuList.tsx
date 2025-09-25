@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import MenuItemCard from "./MenuItemCard";
 import StatusDropdown from "./StatusDropDown";
 import type { TableStatus } from "../../data/Tables";
-import { getMenu, type Menu } from "../../api/Menu";
+import { getMenu, type Menu } from "../../hooks/Menu";
 
 type MenuListProps = {
   onAddItem: (item: Menu) => void;
