@@ -38,7 +38,7 @@ class AuthService
     {
     $user = $this->repo->getUsersByEmail($data['email']); 
     
-    if (!$user || Hash::check($data['password'], $user->password)) {
+    if (!$user || !Hash::check($data['password'], $user->password)) {
         return ApiResponse::unauthorized('Email or Password Wrong!');
     }
 
