@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginUser } from "../../hooks/auth";
 
-export default function LoginPage() {
+type LoginPageProps = {
+  onLogin?: () => void;
+};
+
+export default function LoginPage({ onLogin }: LoginPageProps) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -21,11 +25,17 @@ export default function LoginPage() {
     try {
       const res = await LoginUser(formData);
 
+      if (res.data.status !== 200) {
+        alert(res.data.message);
+        return;
+      }
+
       localStorage.setItem("token", res.data.data.token);
       localStorage.setItem("name", res.data.data.user.name);
       localStorage.setItem("role", res.data.data.user.roles[0]);
 
       alert("Login berhasil!");
+      if (onLogin) onLogin();
       navigate("/");
     } catch (err) {
       console.error(err);

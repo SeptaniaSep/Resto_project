@@ -20,7 +20,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="flex items-center justify-between bg-gray-800 px-12 py-4 text-white">
+    <nav className="flex items-center justify-between bg-4 px-12 py-4 text-white">
       <div className="leading-tight">
         <p className="font-medium text-2xl">{name || "Guest"}</p>
         <p className="text-l text-gray-300">{role || "Unknown"}</p>

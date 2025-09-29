@@ -2,6 +2,15 @@ import { useState } from "react";
 import { RegisterUser } from "../../hooks/auth";
 import { useNavigate } from "react-router-dom";
 
+interface ErrorResponse {
+  message: string;
+  response?: {
+    data: {
+      message: string;
+    };
+  };
+}
+
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -24,12 +33,22 @@ export default function RegisterPage() {
     e.preventDefault();
     try {
       const res = await RegisterUser(formData);
-      console.log("Register success:", res.data);
+
       navigate("/login");
       alert("User registered successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to register");
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "message" in err) {
+        const error = err as ErrorResponse;
+        console.error(error.message);
+        if (error.response) {
+          alert(error.response.data.message);
+        } else {
+          alert(error.message);
+        }
+      } else {
+        console.error("An unknown error occurred", err);
+        alert("An unknown error occurred");
+      }
     }
   };
 

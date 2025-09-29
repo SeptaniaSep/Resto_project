@@ -11,50 +11,12 @@ export type OrderItem = {
   price: number;
 };
 
-export default function OrderPage(
-) {
+export default function OrderPage() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  // const [table, setTable] = useState<Table[] | null>([]);
   const [tableStatus, setTableStatus] = useState<TableStatus>("available");
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-
-  // useEffect(() => {
-  //   const fetchTable = async () => {
-  //     try {
-  //       const res = await getTables();
-  //       console.log("res", res);
-
-  //       setTable(res.data.data.table_list);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
-  //   fetchTable();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!id) return;
-  //   const savedOrders = localStorage.getItem(`orders_table_${id}`);
-  //   if (savedOrders) {
-  //     setOrderItems(JSON.parse(savedOrders));
-  //   }
-  // }, [id]);
-
-  // useEffect(() => {
-  //   if (!id) return;
-  //   localStorage.setItem(`orders_table_${id}`, JSON.stringify(orderItems));
-  // }, [orderItems, id]);
-
-  // useEffect(() => {
-  //   if (!id) return;
-  //   localStorage.setItem(`status_table_${id}`, tableStatus);
-  // }, [tableStatus, id]);
-
-  // if (!table) {
-  //   return <div className="p-6">Loading table data...</div>;
-  // }
 
   const handleAddItem = (item: { name: string; price: number }) => {
     setOrderItems((prev) => {
@@ -93,14 +55,15 @@ export default function OrderPage(
       <div className="flex items-center gap-4 mb-4">
         <button
           onClick={() => navigate("/")}
-          className="p-1 rounded hover:bg-gray-200 transition"
+          className="flex gap-2 p-1 rounded items-center hover:bg-gray-200 transition"
         >
           <IoMdArrowRoundBack size={20} />
         </button>
-
-        <h2 className="text-lg font-semibold">
-          {/* Table {tableName} (Status: {tableStatus}) */}
-        </h2>
+        <h1 className="flex gap-1 items-center">
+          Table
+          <h1 className="text-xl font-semibold">{id}</h1>
+          (Status: {tableStatus})
+        </h1>
       </div>
 
       <div className="flex gap-6">
@@ -117,7 +80,7 @@ export default function OrderPage(
         {/* RIGHT */}
         <CurrentOrder
           tableId={Number(id)}
-          tableName={Number(id)}
+          tableNumber={Number(id)}
           tableStatus={tableStatus}
           orderItems={orderItems}
           onAddItem={handleAddItem}

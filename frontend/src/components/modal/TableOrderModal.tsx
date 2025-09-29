@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { TableStatus } from "../../data/Tables";
 import MenuList from "../order/MenuList";
 import CurrentOrder from "../order/CurrentOrder";
+import { getTableDetail } from "../../hooks/Table";
+import { useParams } from "react-router-dom";
 
 export type OrderItem = {
   name: string;
@@ -11,51 +13,60 @@ export type OrderItem = {
 
 type TableOrderModalProps = {
   tableId: number;
-  tableName: number;
+  table_number: number;
   initialStatus: TableStatus;
   onClose: () => void;
 };
 
 export default function TableOrderModal({
   tableId,
-  tableName,
+  table_number,
   initialStatus,
   onClose,
 }: TableOrderModalProps) {
-  const [orderItems, setOrderItems] = useState<OrderItem[]>(() => {
-    const savedOrders = localStorage.getItem(`orderItems-${tableId}`);
-    return savedOrders ? JSON.parse(savedOrders) : [];
-  });
-
-  const [tableStatus, setTableStatus] = useState<TableStatus>(() => {
-    const savedStatus = localStorage.getItem(`tableStatus-${tableId}`);
-    return savedStatus ? (savedStatus as TableStatus) : initialStatus;
-  });
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [tableStatus, setTableStatus] = useState<TableStatus>(initialStatus);
+  const [loading, setLoading] = useState<boolean>(true);
+  const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
-    const savedOrders = localStorage.getItem(`orderItems-${tableId}`);
-    const savedStatus = localStorage.getItem(`tableStatus-${tableId}`);
+    const fetchTableDetail = async () => {
+      try {
+        setLoading(true);
+        const res = await getTableDetail(tableId);
+        if (res.data?.data?.data) {
 
-    if (savedOrders) setOrderItems(JSON.parse(savedOrders));
-    if (savedStatus) setTableStatus(savedStatus as TableStatus);
-    else setTableStatus(initialStatus);
+          const items = res.data.data.data.map((menu) => ({
+            name: menu.name,
+            qty: menu.qty,
+            price: Number(menu.price),
+          }));
+          setOrderItems(items);
+        }
+
+        if (res.data?.data?.data[0]?.status) {
+          setTableStatus(res.data.data.data[0].status as TableStatus);
+        } else {
+          setTableStatus(initialStatus);
+        }
+      } catch (err) {
+        console.error("Failed to fetch table detail:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTableDetail();
   }, [tableId, initialStatus]);
-
-  useEffect(() => {
-    localStorage.setItem(`orderItems-${tableId}`, JSON.stringify(orderItems));
-  }, [orderItems, tableId]);
-
-  useEffect(() => {
-    localStorage.setItem(`tableStatus-${tableId}`, tableStatus);
-  }, [tableStatus, tableId]);
 
   const handleAddItem = (item: { name: string; price: number }) => {
     setOrderItems((prev) => {
       const existing = prev.find((i) => i.name === item.name);
-      if (existing)
+      if (existing) {
         return prev.map((i) =>
           i.name === item.name ? { ...i, qty: i.qty + 1 } : i
         );
+      }
       return [...prev, { ...item, qty: 1 }];
     });
   };
@@ -70,6 +81,15 @@ export default function TableOrderModal({
       );
     });
   };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/20">
+        <div className="bg-white rounded-lg shadow-lg p-6">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/20">
       <div className="bg-white rounded-lg shadow-lg w-auto max-w-7xl p-6 relative">
@@ -81,36 +101,29 @@ export default function TableOrderModal({
         </button>
 
         <h2 className="text-xl font-semibold mb-4">
-          Table {tableName} (Status: {tableStatus})
+          Table {id} (Status: {tableStatus})
         </h2>
 
         <div className="flex gap-6">
           {/* LEFT: Menu List */}
-          <MenuList
+          {/* <MenuList
             onAddItem={handleAddItem}
             onRemoveItem={handleRemoveItem}
             tableStatus={tableStatus}
             setTableStatus={setTableStatus}
-          />
+          /> */}
 
           {/* RIGHT: Current Order */}
           <CurrentOrder
             tableId={tableId}
-            tableName={tableName}
+            tableNumber={table_number}
             tableStatus={tableStatus}
             orderItems={orderItems}
             onAddItem={handleAddItem}
             onRemoveItem={handleRemoveItem}
             onCloseTableOrderModal={onClose}
             onUpdateTableStatus={(id, status) => {
-              const tables = JSON.parse(localStorage.getItem("tables") || "[]");
-              const updated = tables.map((t: any) =>
-                t.id === id ? { ...t, status } : t
-              );
-              localStorage.setItem("tables", JSON.stringify(updated));
-
               setTableStatus(status);
-              localStorage.setItem(`tableStatus-${id}`, status);
             }}
           />
         </div>

@@ -6,7 +6,7 @@ type Props = {
   onRemove: () => void;
 };
 
-export default function MenuItemCard({ item, onAdd, onRemove }: Props) {
+export default function MenuItemCard({ item,  onAdd, onRemove }: Props) {
   return (
     <div className="grid gap-2">
       <div className="bg-2 flex rounded-lg p-3 shadow h-24 w-full">

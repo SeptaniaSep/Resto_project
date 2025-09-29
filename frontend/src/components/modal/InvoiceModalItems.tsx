@@ -1,33 +1,57 @@
-import { useNavigate } from "react-router-dom";
 import type { TableStatus } from "../../data/Tables";
+import { postOrder } from "../../hooks/Order";
 import type { OrderItem } from "./TableOrderModal";
+import { useState } from "react";
 
 type InvoiceModalProps = {
   tableId: number;
-  tableName: number;
+  tableNumber: number;
   tableStatus: TableStatus;
   orderItems: OrderItem[];
   total: number;
   onClose: () => void;
-  onProcessOrder: (tableId: number) => void;
   onCloseTableOrderModal: React.Dispatch<React.SetStateAction<boolean>>;
+  showCookButton?: boolean;
 };
 
 export default function InvoiceModal({
   tableId,
-  tableName,
+  tableNumber,
   tableStatus,
   orderItems,
-  total,
   onClose,
   onCloseTableOrderModal,
-  onProcessOrder,
+  showCookButton = true, 
 }: InvoiceModalProps) {
+  const [loading, setLoading] = useState(false);
   const totalMenus = orderItems.reduce((acc, item) => acc + item.qty, 0);
-  const handleProcess = () => {
-    onProcessOrder(tableId);
-    onClose();
-    onCloseTableOrderModal(false);
+
+  const handleProcess = async () => {
+    if (orderItems.length === 0) {
+      alert("Belum ada menu yang dipesan!");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload = {
+        table_number: tableNumber,
+        status: tableStatus,
+        orders: orderItems,
+      };
+
+      const res = await postOrder(payload);
+
+      alert("Pesanan berhasil dikirim ke dapur!");
+      onClose();
+      onCloseTableOrderModal(false);
+    } catch (err: any) {
+      console.error("Gagal submit order:", err.response?.data || err);
+      alert("Gagal submit order, cek console untuk detail");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,7 +66,7 @@ export default function InvoiceModal({
 
         <h2 className="text-xl font-bold mb-4">Invoice</h2>
         <p className="text-sm text-gray-600 mb-2">
-          Table <span className="font-semibold">{tableName}</span> • Status:{" "}
+          Table <span className="font-semibold">{tableNumber}</span> • Status:{" "}
           <span className="font-medium">{tableStatus}</span>
         </p>
         <p className="text-sm text-gray-500 mb-4">
@@ -77,8 +101,9 @@ export default function InvoiceModal({
           <button
             className="px-4 py-2 bgbutton-1 text-white rounded-lg"
             onClick={handleProcess}
+            disabled={loading}
           >
-            Pesanan Diproses Dapur
+            {loading ? "Mengirim..." : "Pesanan Diproses Dapur"}
           </button>
         </div>
       </div>

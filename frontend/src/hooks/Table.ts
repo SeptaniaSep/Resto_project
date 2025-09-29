@@ -39,11 +39,28 @@ export type DataById = {
   };
 };
 
+export type TableDetailResponse = {
+  status: number;
+  message: string;
+  data: {
+    data: Menu[];
+    total: number;
+  };
+  time_stamp: {
+    date: string;
+    timezone_type: number;
+    timezone: string;
+  };
+}
 
 export const getTables = async () => {
   return await apiProduct.get<Data>("/tablelist");
 };
 
-export const getTableByIdTble = async () => {
+export const getTableByIdTable = async () => {
   return await apiProduct.get<DataById>("/tablelist/:id")
+};
+
+export const getTableDetail = async (id: number) => {
+  return await apiProduct.get<TableDetailResponse>(`/tablelist/${id}`);
 };

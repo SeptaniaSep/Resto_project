@@ -3,13 +3,13 @@ import type { TableStatus } from "../../data/Tables";
 import type { OrderItem } from "../modal/TableOrderModal";
 import InvoiceModal from "../modal/InvoiceModalItems";
 import { postOrder } from "../../hooks/Order";
-import { GiCampCookingPot, GiReceiveMoney } from "react-icons/gi";
-import { useNavigate } from "react-router-dom";
+import { GiCampCookingPot } from "react-icons/gi";
 import InvoiceModalPayments from "../modal/InvoiceModalPayments";
+import { LiaMoneyBillWaveSolid } from "react-icons/lia";
 
 type CurrentOrderProps = {
   tableId: number;
-  tableName: number;
+  tableNumber: number; 
   tableStatus: TableStatus;
   orderItems: OrderItem[];
   onAddItem: (item: OrderItem) => void;
@@ -20,7 +20,7 @@ type CurrentOrderProps = {
 
 export default function CurrentOrder({
   tableId,
-  tableName,
+  tableNumber,
   tableStatus,
   orderItems,
   onAddItem,
@@ -31,17 +31,18 @@ export default function CurrentOrder({
   const [showInvoice, setShowInvoice] = useState(false);
   const [showInvoicePay, setShowInvoicePay] = useState(false);
   const [storedOrders, setStoredOrders] = useState<OrderItem[]>([]);
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     const item = localStorage.getItem(`orderItems-${tableId}`);
     if (item) setStoredOrders(JSON.parse(item));
-  }, []);
+  }, [tableId]);
 
+  
   useEffect(() => {
     localStorage.setItem(`orderItems-${tableId}`, JSON.stringify(orderItems));
     setStoredOrders(orderItems);
-  }, [orderItems]);
+  }, [orderItems, tableId]);
 
   const onClickPost = async () => {
     if (storedOrders.length === 0) {
@@ -50,7 +51,7 @@ export default function CurrentOrder({
     }
 
     const data = {
-      table_number: tableId,
+      table_number: tableNumber, 
       status: tableStatus,
       orders: storedOrders.map((i) => ({
         name: i.name,
@@ -61,7 +62,7 @@ export default function CurrentOrder({
 
     try {
       await postOrder(data);
-
+      
       setShowInvoice(true);
     } catch (err) {
       console.error(err);
@@ -69,7 +70,7 @@ export default function CurrentOrder({
   };
 
   const total = orderItems.reduce(
-    (acc, item) => acc + item.qty * item.price,
+    (acc, item) => acc + item.qty * Number(item.price),
     0
   );
 
@@ -83,33 +84,21 @@ export default function CurrentOrder({
   const handleCloseInvoice = () => {
     setShowInvoice(false);
     setStoredOrders([]);
-    localStorage.removeItem("currentOrder");
+    localStorage.removeItem(`orderItems-${tableId}`);
   };
 
   const handleCloseInvoicePay = () => {
     setShowInvoicePay(false);
     setStoredOrders([]);
-    localStorage.removeItem("currentOrder");
-  };
-
-  const onClickPayment = async () => {
-    const data = {
-      table_number: tableId,
-      status: tableStatus,
-      orders: storedOrders.map((i) => ({
-        name: i.name,
-        price: i.price,
-        qty: i.qty,
-      })),
-    };
+    localStorage.removeItem(`orderItems-${tableId}`);
   };
 
   return (
-    <div className="w-full sm:w-1/3 bg-gray-50 rounded-lg p-4 shadow">
+    <div className="w-100   bg-gray-50 rounded-lg p-4 shadow">
       <div className="mb-4">
         <p className="font-semibold">Current Order</p>
         <p className="text-xs text-gray-600">
-          Table {tableName} • {new Date().toLocaleDateString("id-ID")}
+          Table {tableNumber} • {new Date().toLocaleDateString("id-ID")}
         </p>
         <p className="text-xs mt-1">
           Status: <span className="font-medium">{tableStatus}</span>
@@ -124,7 +113,7 @@ export default function CurrentOrder({
             <div key={item.name} className="pb-2">
               <div className="flex justify-between">
                 <p className="font-medium">{item.name}</p>
-                <p>{formatCurrency(item.qty * item.price)}.00</p>
+                <p>{formatCurrency(item.qty * Number(item.price))}.00</p>
               </div>
               <div className="flex gap-2 items-center mt-2">
                 <button
@@ -165,34 +154,26 @@ export default function CurrentOrder({
           className="flex-1 mt-3 py-2 flex items-center justify-center bgbutton-3 cursor-pointer text-white rounded"
           onClick={() => setShowInvoicePay(true)}
         >
-          <GiReceiveMoney size={40} />
+          <LiaMoneyBillWaveSolid size={40}/>
         </button>
       </div>
 
       {showInvoice && (
         <InvoiceModal
           tableId={tableId}
-          tableName={tableName}
+          tableNumber={tableNumber}   
           tableStatus={tableStatus}
           orderItems={storedOrders}
           total={total}
           onClose={handleCloseInvoice}
           onCloseTableOrderModal={onCloseTableOrderModal}
-          onProcessOrder={(id) => {
-            const tables = JSON.parse(localStorage.getItem("tables") || "[]");
-            const updated = tables.map((t: any) =>
-              t.id === id ? { ...t, status: "inactive" } : t
-            );
-            localStorage.setItem("tables", JSON.stringify(updated));
-            onUpdateTableStatus(id, "inactive");
-          }}
         />
       )}
 
       {showInvoicePay && (
         <InvoiceModalPayments
           tableId={tableId}
-          tableName={tableName}
+          tableNumber={tableNumber}  
           tableStatus={tableStatus}
           orderItems={storedOrders}
           total={total}

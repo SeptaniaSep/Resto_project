@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import type { TableStatus } from "../../data/Tables";
 import type { OrderItem } from "./TableOrderModal";
-import { GiPayMoney } from "react-icons/gi";
+import { GiReceiveMoney } from "react-icons/gi";
+import { EditStatusTable } from "../../hooks/Order";
 
 type InvoiceModalProps = {
   tableId: number;
-  tableName: number;
+  tableNumber: number;
   tableStatus: TableStatus;
   orderItems: OrderItem[];
   total: number;
@@ -15,7 +16,7 @@ type InvoiceModalProps = {
 
 export default function InvoiceModalPayments({
   tableId,
-  tableName,
+  tableNumber,
   tableStatus,
   orderItems,
   onClose,
@@ -29,11 +30,21 @@ export default function InvoiceModalPayments({
 
   const navigate = useNavigate();
 
-  const handleProcess = () => {
+ const handleProcess = async () => {
+  try {
+    await EditStatusTable(tableId, "available");
     onProcessOrder(tableId);
     onClose();
     navigate("/");
-  };
+    window.location.reload();
+
+    alert("Pembayaran berhasil! Meja sudah tersedia kembali ✅");
+  } catch (err) {
+    console.error("Gagal update status meja:", err);
+    alert("Gagal update status meja, coba lagi!");
+  }
+};
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/30">
@@ -47,7 +58,7 @@ export default function InvoiceModalPayments({
 
         <h2 className="text-xl font-bold mb-4">Payment</h2>
         <p className="text-sm text-gray-600 mb-2">
-          Table <span className="font-semibold">{tableName}</span> • Status:{" "}
+          Table <span className="font-semibold">{tableNumber}</span> • Status:{" "}
           <span className="font-medium">{tableStatus}</span>
         </p>
         <p className="text-sm text-gray-500 mb-4">
@@ -61,7 +72,7 @@ export default function InvoiceModalPayments({
             <div key={item.name} className="flex justify-between pt-2">
               <span>{item.name}</span>
               <div className="flex gap-10">
-                <span> x {item.qty}</span>
+                <span>x {item.qty}</span>
                 <span>Rp {item.price}</span>
               </div>
             </div>
@@ -84,10 +95,10 @@ export default function InvoiceModalPayments({
             Batal
           </button>
           <button
-            className="px-4 py-2 bgbutton-1 text-white rounded-lg"
+            className="px-4 py-2 bgbutton-1 text-white rounded-lg flex items-center gap-2"
             onClick={handleProcess}
           >
-            <GiPayMoney size={40} />
+            <GiReceiveMoney size={24} /> Bayar
           </button>
         </div>
       </div>
