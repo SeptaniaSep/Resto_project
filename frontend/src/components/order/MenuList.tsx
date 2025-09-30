@@ -20,6 +20,7 @@ export default function MenuList({
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const fetchMenu = async () => {
       try {
